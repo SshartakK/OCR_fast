@@ -9,6 +9,7 @@ from app.domain.entities import HealthStatus, Document, DocumentText
 from app.application.interfaces import IHealthCheckRepository, IDocumentRepository, IAsyncWorker
 from app.infrastructure.services import RabbitMQHealthCheck, TesseractHealthCheck
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class HealthCheckUseCase:
     def __init__(self, health_repo: IHealthCheckRepository):
@@ -45,7 +46,7 @@ class GetDocumentTextUseCase:
 class DocumentUploadUseCase:
     def __init__(self, document_repo: IDocumentRepository):
         self.document_repo = document_repo
-        self.upload_dir = Path("documents")
+        self.upload_dir = BASE_DIR / "documents"
         self.upload_dir.mkdir(exist_ok=True)
 
     async def execute(self, file_name: str, file_content: str) -> Document:
@@ -64,7 +65,7 @@ class DocumentUploadUseCase:
 class DocumentUploadSwaggerUseCase:
     def __init__(self, document_repo: IDocumentRepository):
         self.document_repo = document_repo
-        self.upload_dir = Path("documents")
+        self.upload_dir = BASE_DIR / "documents"
         self.upload_dir.mkdir(exist_ok=True)
 
     async def execute(self, file: UploadFile) -> Document:
