@@ -1,3 +1,4 @@
+import pika
 from celery.result import AsyncResult
 import pytesseract
 from pika import ConnectionParameters, BlockingConnection
@@ -28,7 +29,11 @@ class RabbitMQHealthCheck:
     def check() -> HealthStatus:
         try:
             connection = BlockingConnection(
-                ConnectionParameters(host='localhost')
+                ConnectionParameters(
+                    host='rabbitmq',
+                    port=5672,
+                    virtual_host='/',
+                    credentials=pika.PlainCredentials('user', 'password'))
             )
             connection.close()
         except Exception as e:

@@ -15,10 +15,6 @@ app = FastAPI(
 
 app.include_router(router)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-app.mount("/documents", StaticFiles(directory=str(BASE_DIR / "documents")), name="documents")
-
-
 @app.exception_handler(Exception)
 async def universal_exception_handler(request, exc):
     return JSONResponse(
@@ -33,8 +29,9 @@ async def root():
         "message": f"{settings.app_name} is running",
         "version": settings.app_version
     }
-
+'''
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="127.0.0.1", port=8000)
+'''

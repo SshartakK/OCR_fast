@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     postgres_user: str = "artem"
     postgres_password: str = "root"
     postgres_db: str = "artemfastdb"
-    postgres_host: str = "localhost"
+    postgres_host: str = "db"
     postgres_port: int = 5432
 
     @property
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
     # Celery configuration
-    celery_broker_url: str = "pyamqp://guest:guest@localhost//"
+    celery_broker_url: str = "amqp://user:password@rabbitmq:5672//"
     celery_result_backend: str = "rpc://"
     tesseract_path: str = "/usr/bin/tesseract"
         

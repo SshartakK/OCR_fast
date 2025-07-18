@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: artem
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: artemfastdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  web:
+    build: .
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    volumes:
+      - ./app:/app/app
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+      - ./.env:/app/.env
+      - ./app/documents:/app/documents
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - DATABASE_URL=postgresql://artem:root@db:5432/artemfastdb
+      - CELERY_BROKER_URL=amqp://user:password@rabbitmq:5672//
+
+  worker:
+    build: .
+    command: celery -A app.infrastructure.celery worker --loglevel=info
+    volumes:
+      - ./app:/app/app
+      - ./.env:/app/.env
+      - ./app/documents:/app/documents
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - DATABASE_URL=postgresql://artem:root@db:5432/artemfastdb
+      - CELERY_BROKER_URL=amqp://user:password@rabbitmq:5672//
+
+volumes:
+  db_data:
+  rabbitmq_data:
