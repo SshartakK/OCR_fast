@@ -12,6 +12,8 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    networks:
+      - my_net
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -24,8 +26,10 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - my_net
 
-  web:
+  fastweb:
     build: .
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     volumes:
@@ -42,6 +46,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://artem:root@db:5432/artemfastdb
       - CELERY_BROKER_URL=amqp://user:password@rabbitmq:5672//
+    networks:
+      - my_net
 
   worker:
     build: .
@@ -56,7 +62,13 @@ services:
     environment:
       - DATABASE_URL=postgresql://artem:root@db:5432/artemfastdb
       - CELERY_BROKER_URL=amqp://user:password@rabbitmq:5672//
+    networks:
+      - my_net
 
 volumes:
   db_data:
   rabbitmq_data:
+
+networks:
+  my_net:
+    external: true
