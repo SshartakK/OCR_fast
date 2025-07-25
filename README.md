@@ -75,4 +75,4 @@ docker-compose exec web alembic upgrade head
 ---
 
 ## Лицензия
-MIT
+...
