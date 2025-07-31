@@ -29,6 +29,7 @@ async def root():
         "message": f"{settings.app_name} is running",
         "version": settings.app_version
     }
+
 '''
 if __name__ == "__main__":
     import uvicorn
